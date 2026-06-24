@@ -1,2 +1,12 @@
+# Virtual environment
 myvenv
+
+# Python cache
 __pycache__
+
+# Environment Variable
+.env
+
+#ignore all .sqlite database file inside the instance folder
+instance/*.sqlite3  
+

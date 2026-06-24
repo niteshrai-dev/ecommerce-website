@@ -3,12 +3,14 @@ from .models import Product, Cart, Order
 from flask_login import login_required, current_user
 from . import db
 import razorpay
+import os
+from dotenv import load_dotenv
 
 views = Blueprint('views',__name__)
 
 
-API_KEY = 'rzp_test_T3wLvIPZ97FxwF'
-API_SECRET = 'Mk5jHykat2H2XgsPBuR0osMW'
+API_KEY = os.getenv('API_KEY')
+API_SECRET = os.getenv('API_SECRET')
 
 client = razorpay.Client(auth=(API_KEY, API_SECRET))
 
@@ -131,72 +133,6 @@ def remove_cart():
             'total':amount + 200
         }
         return jsonify(data)
-    
-
-
-'''@views.route('/place-order')
-@login_required
-def place_order():
-    customer_cart = Cart.query.filter_by(customer_link=current_user.id).all()
-
-    if not customer_cart:
-        flash('Your cart is Empty')
-        return redirect('/')
-
-    try:
-        # 1. Calculate total
-        total = 0
-        for item in customer_cart:
-            total += item.product.current_price * item.quantity
-
-        total += 200  # delivery charge
-        amount_paise = int(total * 100)  # Razorpay uses paise
-
-        # 2. Create Razorpay order
-        razorpay_order = client.order.create({
-            "amount": amount_paise,
-            "currency": "INR",
-            "payment_capture": 1,
-            "receipt": f"order_{current_user.id}"
-        })
-
-        # 3. Save pending orders (NOT final)
-        for item in customer_cart:
-            new_order = Order()
-            new_order.quantity = item.quantity
-            new_order.price = item.product.current_price
-            new_order.status = "Pending"
-            new_order.payment_id = razorpay_order['id']
-
-            new_order.product_link = item.product_link
-            new_order.customer = item.customer_link
-
-            db.session.add(new_order)
-
-            # reduce stock
-            product = Product.query.get(item.product_link)
-            product.in_stock -= item.quantity
-
-            # remove cart item
-            db.session.delete(item)
-
-        db.session.commit()
-
-        flash('Order created. Proceed to payment.')
-
-        # 4. Send order to frontend
-        return redirect(
-            "/orders",
-            order=razorpay_order,
-            amount=amount_paise,
-            key=API_KEY,
-            user=current_user
-        )
-
-    except Exception as e:
-        print(e)
-        flash('Order not placed')
-        return redirect('/')   '''
     
 
 @views.route('/place-order')

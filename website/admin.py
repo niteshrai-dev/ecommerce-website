@@ -129,7 +129,7 @@ def order_view():
 def update_order(order_id):
     if current_user.id == 1:
         form = OrderForm()
-        order = order.query.get(order_id)
+        order = Order.query.get(order_id)
         if form.validate_on_submit():
             status = form.order_status.data
             order.status = status
